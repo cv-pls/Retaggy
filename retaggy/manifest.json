@@ -21,7 +21,8 @@
   "content_scripts": [
     {
       "matches": [
-        "http://stackoverflow.com/questions/tagged/*"
+        "http://stackoverflow.com/questions/tagged/*",
+        "http://stackoverflow.com/questions/*"
       ],
       "js": [
         "content/main.js"
