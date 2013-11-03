@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <script type="text/javascript" src="popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="popup.css">
+    <link rel="stylesheet" type="text/css" href="input.css">
+  </head>
+
+  <body>
+    <div id="form">
+      <i>Tag lists are semi-colon ; separated</i>
+      <div>Find <input id="num-questions" type="text" size="2" value="100"> questions tagged <input id="question-tags" type="text" size="15"></div>
+      <div class="indent disabled"><input id="enable-nottagged" type="checkbox"> and not tagged <input id="question-nottags" type="text" size="15" disabled></div>
+      <section>
+        <div>With those questions:</div>
+        <div class="disabled"><input id="enable-remove" type="checkbox"> Remove these tags <input id="tag-remove" type="text" size="15" disabled></div>
+        <div class="disabled"><input id="enable-add" type="checkbox"> Add these tags <input id="tag-add" type="text" size="15" disabled></div>
+        <div class="indent disabled"><input id="enable-unless" type="checkbox" disabled> Unless it has one of these tags <input id="tag-unless" type="text" size="15" disabled></div>
+      </section>
+      <input id="go-button" type="button" value="Go">
+    </div>
+    <div id="running-message">
+      <div>Currently running</div>
+      <input id="stop-button" type="button" value="Stop">
+    </div>
+  </body>
+
+</html>

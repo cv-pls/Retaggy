@@ -1,0 +1,24 @@
+body, html {
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  color: #444;
+  width: 400px;
+}
+div.indent {
+  margin-left: 15px;
+}
+section {
+  margin-top: 8px;
+}
+div.disabled {
+  color: #aaa;
+}
+#running-message, #form {
+  display: none;
+}
+#num-questions {
+  text-align: center;
+}
+input[type=button] {
+  margin-top: 8px;
+}
