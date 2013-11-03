@@ -33,34 +33,58 @@
         localStorage.setItem('urls', JSON.stringify(urls));
     }
 
+    function runOnUrl(url, tag) {
+        handle(url);
+
+        chrome.runtime.sendMessage({
+            action: "openTab",
+            url: "http://stackoverflow.com" + url,
+            tag: tag
+        }, function(response) {
+            console.log(response);
+        });
+    }
+
+    function runBurninator(urls, tag) {
+        if (!urls.length) {
+            return;
+        }
+
+        runOnUrl(urls.shift(), tag);
+
+        var interval = setInterval(function() {
+            if (!urls.length) {
+                clearInterval(interval);
+                return;
+            }
+
+            runOnUrl(urls.shift(), tag);
+        }, 5000);
+    }
+
     function burninate(tag) {
         reset();
 
         var questions = document.querySelectorAll('.question-hyperlink');
+        var urls = [];
 
         for (var i = 0, l = questions.length; i < l; i++) {
             if (isHandled(tag)) {
                 continue;
             }
 
-            handle(questions[i].getAttribute('href'));
+            urls.push(questions[i].getAttribute('href'));
 
-            chrome.runtime.sendMessage({
-                action: "openTab",
-                url: "http://stackoverflow.com" + questions[i].getAttribute('href'),
-                tag: tag
-            }, function(response) {
-                console.log(response);
-            });
-
-            break;
+            // uncomment for debugging so only one question will be processed
+            //break;
         }
+
+        runBurninator(urls, tag);
 
         return 'ok';
     }
 
-    chrome.runtime.sendMessage({action: "init"}, function(response) {
-    });
+    chrome.runtime.sendMessage({action: "init"}, function(response) {});
 
     chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         if (request.action === "burninate") {
@@ -68,9 +92,40 @@
         }
 
         if (request.action === "burninateTab") {
-            alert(request.tag);
+            var click = document.createEvent("HTMLEvents");
+            click.initEvent('click', true, true );
 
-            sendResponse({result: burninate(request.tag)});
+            var tagsList = document.getElementById('edit-tags').parentNode.parentNode.parentNode;
+
+            document.getElementById('edit-tags').dispatchEvent(click);
+
+            setTimeout(function() {
+                var tags = tagsList.querySelectorAll('span.post-tag');
+
+                if (tags.length == 1) {
+                    return;
+                }
+
+                for (var i = 0, l = tags.length; i < l; i++) {
+                    if (tags[i].childNodes[0].nodeValue != request.tag) {
+                        continue;
+                    }
+
+                    tags[i].querySelector('.delete-tag').dispatchEvent(click);
+
+                    document.getElementById('edit-tags-submit').dispatchEvent(click);
+
+                    setTimeout(function() {
+                        chrome.runtime.sendMessage({action: "closeTab", id: request.id}, function(response) {});
+                    }, 2000);
+
+                    sendResponse({result: 'ok'});
+
+                    break;
+                }
+
+                sendResponse({result: 'ok'});
+            }, 1000);
         }
     });
 }());

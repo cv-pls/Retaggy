@@ -10,11 +10,17 @@
                 chrome.tabs.create({
                     'url': request.url
                 }, function(tab) {
-                    chrome.tabs.sendMessage(tab.id, {action: "burninateTab", tag: request.tag}, function(response) {
-                        //alert(response.result);
+                    chrome.tabs.onUpdated.addListener(function(tabId, info) {
+                        if (info.status == "complete" && tab.id == tabId) {
+                            chrome.tabs.sendMessage(tab.id, {action: "burninateTab", tag: request.tag, id: tab.id}, function(response) {});
+                        }
                     });
                 });
                 sendResponse({result: "ok"});
+                break;
+
+            case "closeTab":
+                chrome.tabs.remove(request.id, function() { });
                 break;
 
             default:
